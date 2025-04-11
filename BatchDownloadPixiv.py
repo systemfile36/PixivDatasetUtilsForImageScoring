@@ -2,13 +2,14 @@ import json
 import subprocess
 import logger_factory
 import urllib.parse
+import argparse
 from datetime import datetime, timedelta
 
-COMMAND_FORMAT = 'gallery-dl -D "H:/PixivDataBookmarks" --write-log "H:/PixivDataBookmarks/log.txt" \
---chunk-size "0.8m" --download-archive "H:/PixivDataBookmarks/.archive/archive.sqlite3" \
+COMMAND_FORMAT = 'gallery-dl -D "{path}" --write-log "H:/PixivDataBookmarks/log.txt" \
+--chunk-size "0.8m" --download-archive "{path}/.archive/archive.sqlite3" --range "1-3000" \
 --write-metadata "https://www.pixiv.net/tags/{tag}%20-R-18%20-AI%E3%82%A4%E3%83%A9%E3%82%B9%E3%83%88%20-AI%E7%94%9F%E6%88%90%20-%E6%BC%AB%E7%94%BB%20-%E8%AC%9B%E5%BA%A7%20-%E9%A2%A8%E6%99%AF/artworks?order=popular_d&mode=safe&scd={scd}&ecd={ecd}&s_mode=s_tag"'
 
-def batch_download_pixiv_by_tags():
+def batch_download_pixiv_by_tags(path: str):
     """
     batch download by tags list (json)
     tags list's format should be like [{tag_name: ..., }, ...]
@@ -29,7 +30,7 @@ def batch_download_pixiv_by_tags():
 
             logger.info(f"download {tag_name}, scd: {scd.date()}, ecd: {ecd.date()}")
 
-            cmd = COMMAND_FORMAT.format(tag=urllib.parse.quote(tag_name), scd=scd.date(), ecd=ecd.date())
+            cmd = COMMAND_FORMAT.format(path=path, tag=urllib.parse.quote(tag_name), scd=scd.date(), ecd=ecd.date())
 
             logger.debug(f"Execute {cmd}")
 
@@ -42,5 +43,18 @@ def batch_download_pixiv_by_tags():
             scd = scd.replace(year=scd.year - 1)
 
 if __name__ == '__main__':
-    batch_download_pixiv_by_tags()
+
+    parser = argparse.ArgumentParser(
+        description="Download Pixiv image by script using gallery-dl"
+    )
+
+    parser.add_argument(
+        "path",
+        type=str,
+        help="directory path to download data"
+    )
+
+    args = parser.parse_args()
+
+    batch_download_pixiv_by_tags(args.path)
     subprocess.run("shutdown /s /t 60", shell=True)
