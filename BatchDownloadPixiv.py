@@ -6,7 +6,7 @@ import argparse
 from datetime import datetime, timedelta
 
 COMMAND_FORMAT = 'gallery-dl -D "{path}" --write-log "H:/PixivDataBookmarks/log.txt" \
---chunk-size "0.8m" --download-archive "{path}/.archive/archive.sqlite3" --range "1-3000" \
+--chunk-size "0.8m" --download-archive "{path}/.archive/archive.sqlite3" --range "1-2000" \
 --write-metadata "https://www.pixiv.net/tags/{tag}%20-R-18%20-AI%E3%82%A4%E3%83%A9%E3%82%B9%E3%83%88%20-AI%E7%94%9F%E6%88%90%20-%E6%BC%AB%E7%94%BB%20-%E8%AC%9B%E5%BA%A7%20-%E9%A2%A8%E6%99%AF/artworks?order=popular_d&mode=safe&scd={scd}&ecd={ecd}&s_mode=s_tag"'
 
 def batch_download_pixiv_by_tags(path: str):
