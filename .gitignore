@@ -3,6 +3,10 @@ Temp/
 log.*
 *.log
 
+#Others
+pixiv_tags_*
+gallery-dl.*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
