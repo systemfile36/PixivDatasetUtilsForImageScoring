@@ -5,6 +5,7 @@ from multiprocessing import Pool, cpu_count
 from functools import partial
 import argparse
 import logger_factory
+from datetime import datetime
 
 from tqdm import tqdm
 
@@ -29,7 +30,7 @@ def init_db(path: str):
         user_name TEXT,
         user_account TEXT,
         tags TEXT,
-        create_date TEXT,
+        create_date TIMESTAMP,
         page_count INTEGER,
         width INTEGER,
         height INTEGER,
@@ -43,7 +44,7 @@ def init_db(path: str):
         illust_ai_type INTEGER,
         illust_book_style INTEGER,
         num INTEGER,
-        date TEXT,
+        date TIMESTAMP,
         rating TEXT,
         suffix TEXT,
         category TEXT,
@@ -91,6 +92,13 @@ def parse_json(json_path):
         logger.error(f"[ERROR] Failed to parsing JSON: {json_path} - {e}")
         return None
 
+    def parse_datetime(s):
+        try:
+            # Convert to ISO 8601 format (YYYY-MM-DD HH:MM:SS)
+            return datetime.fromisoformat(s.replace("Z", "+00:00")).isoformat(sep=' ', timespec='seconds') if s else None
+        except:
+            return None
+
     try:
         return {
             "id": metadata.get("id"),
@@ -100,7 +108,7 @@ def parse_json(json_path):
             "user_name": metadata.get("user", {}).get("name"),
             "user_account": metadata.get("user", {}).get("account"),
             "tags": ",".join(metadata.get("tags", [])),
-            "create_date": metadata.get("create_date"),
+            "create_date": parse_datetime(metadata.get("create_date")),
             "page_count": metadata.get("page_count"),
             "width": metadata.get("width"),
             "height": metadata.get("height"),
@@ -114,7 +122,7 @@ def parse_json(json_path):
             "illust_ai_type": metadata.get("illust_ai_type"),
             "illust_book_style": metadata.get("illust_book_style"),
             "num": metadata.get("num"),
-            "date": metadata.get("date"),
+            "date": parse_datetime(metadata.get("date")),
             "rating": metadata.get("rating"),
             "suffix": metadata.get("suffix"),
             "category": metadata.get("category"),
