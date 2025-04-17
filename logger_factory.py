@@ -45,10 +45,10 @@ def get_default_file_handler(log_format : str = LOG_FORMAT) -> logging.FileHandl
     file_handler.setFormatter(file_formatter)
     return file_handler
 
-def get_file_handler(log_format: str = LOG_FORMAT, log_prefix: str | None = None) -> logging.FileHandler:
+def get_file_handler(log_format: str = LOG_FORMAT, log_prefix: str = "") -> logging.FileHandler:
     file_formatter = logging.Formatter(log_format)
     file_handler = logging.FileHandler(
-        f"{LOG_DIR_PATH}/{log_prefix if log_prefix else ""}_{datetime.datetime.now().date()}.log",
+        f"{LOG_DIR_PATH}/{log_prefix}_{datetime.datetime.now().date()}.log",
         encoding="utf-8"
     )
     file_handler.setLevel(logging.DEBUG)

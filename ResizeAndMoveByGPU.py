@@ -6,7 +6,7 @@ import argparse
 import tensorflow as tf
 import numpy as np
 
-from logger_factory import get_default_logger
+from logger_factory import get_file_handler, get_default_stream_handler, get_custom_handlers_logger
 
 TARGET_SIZE = (512, 512)
 PADDING_COLOR = (0, 0, 0)
@@ -14,7 +14,11 @@ VALID_EXTS = ('.jpg', '.jpeg', '.png')
 
 pattern = re.compile(r'^(?P<id>\d{6,10})_p\d+\.(jpg|jpeg|png)$', re.IGNORECASE)
 
-logger = get_default_logger(__name__)
+logger_handlers = [
+    get_file_handler(log_prefix=os.path.basename(__file__)),
+    get_default_stream_handler()
+]
+logger = get_custom_handlers_logger(__file__, logger_handlers)
 
 def collect_image_files(root_dir: str) -> list[str]:
     """
