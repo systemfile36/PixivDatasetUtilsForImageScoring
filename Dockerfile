@@ -3,5 +3,7 @@ FROM python:latest
 
 COPY ./gallery-dl.conf /etc/gallery-dl.conf
 
-RUN pip install --no-cache-dir gallery-dl
+COPY ./requirements.txt /requirements.txt
+
+RUN pip install --no-cache-dir -r requirements.txt
 
