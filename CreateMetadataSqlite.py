@@ -23,7 +23,8 @@ def init_db(path: str):
     cursor = conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS illusts (
-        id INTEGER PRIMARY KEY,
+        filename TEXT PRIMARY KEY,
+        id INTEGER,
         title TEXT,
         type TEXT,
         restrict INTEGER,
@@ -51,7 +52,6 @@ def init_db(path: str):
         subcategory TEXT,
         url TEXT,
         date_url TEXT,
-        filename TEXT,
         extension TEXT
     );
     """)
