@@ -5,6 +5,7 @@ log.*
 
 #Others
 pixiv_tags_*
+character_tags*
 gallery-dl.*
 
 # Byte-compiled / optimized / DLL files
