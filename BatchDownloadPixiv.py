@@ -24,7 +24,8 @@ def batch_download_pixiv_by_tags(
         order: str="popular_d",
         date_lower_bound: str='2020-04-04',
         date_upper_bound: str='2025-04-04',
-        range_string: str='1-2000'):
+        range_string: str='1-2000',
+        skip_rows: int=0):
     """
     batch download by tags list (json)
     tags list's format should be like [{tag_name: ..., }, ...]
@@ -40,7 +41,14 @@ def batch_download_pixiv_by_tags(
             logger.warning(f"Can not read file {tag_list_file} - {e}")
             return
 
+    # Count row to skip rows
+    rows_count = 0
+
     for obj in tags_list:
+        # If rows count less than skip rows, skip current iteration
+        if rows_count < skip_rows:
+            rows_count = rows_count + 1
+            continue
 
         if tag_string:
             tag_name = obj
@@ -117,6 +125,12 @@ if __name__ == '__main__':
         help="set order like popular_d..."
     )
 
+    parser.add_argument(
+        "--skip-rows",
+        type=int,
+        help="Number of rows to skip. Skip n rows from tag list specified by '--tag-list' option. Default is 0"
+    )
+
     args = parser.parse_args()
 
     logger.debug(args)
@@ -143,5 +157,8 @@ if __name__ == '__main__':
 
     if args.order_by is not None:
         kwargs['order'] = args.order_by
+
+    if args.skip_rows is not None:
+        kwargs['skip_rows'] = args.skip_rows
 
     batch_download_pixiv_by_tags(args.path, **kwargs)
