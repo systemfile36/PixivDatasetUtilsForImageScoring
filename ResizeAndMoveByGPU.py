@@ -3,6 +3,12 @@ import re
 import shutil
 from PIL import Image
 import argparse
+from tqdm import tqdm
+
+# Supress warning. 
+# Ignore all WARNING. only logging ERROR
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import tensorflow as tf
 import numpy as np
 
@@ -23,6 +29,8 @@ logger = get_custom_handlers_logger(__file__, logger_handlers)
 def collect_image_files(root_dir: str) -> list[str]:
     """
     collect only image file
+
+    max-depth is 1 (only collect not distributed image file)
     """
     files = []
     with os.scandir(root_dir) as entries:
@@ -109,9 +117,14 @@ def run_pipeline(image_paths, batch_size=32):
     ds = ds.batch(batch_size)
     ds = ds.prefetch(buffer_size=tf.data.AUTOTUNE)
 
-    for resized_batch, path_batch in ds:
-        for i in range(resized_batch.shape[0]):
-            save_resized_image(resized_batch[i], path_batch[i])
+    total = len(image_paths)
+
+    with tqdm(total=total, desc="Processing images", unit="image") as progress:
+        for resized_batch, path_batch in ds:
+            for i in range(resized_batch.shape[0]):
+                save_resized_image(resized_batch[i], path_batch[i])
+                # update progress bar
+                progress.update(1)
 
 if __name__ == "__main__":
 
