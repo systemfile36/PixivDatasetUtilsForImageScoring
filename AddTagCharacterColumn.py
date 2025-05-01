@@ -1,6 +1,7 @@
 import sqlite3
 import os 
 import argparse
+from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor
 
 import logger_factory
@@ -65,7 +66,7 @@ def is_column_exists(conn: sqlite3.Connection, table_name: str, column_name: str
     """
     Return True if 'table_name' has column named 'column_name', otherwise, False
     """
-    cursor = conn.execute(f"PRAGMA table_info({table_name});")
+    cursor = conn.execute(f"PRAGMA table_info('{table_name}');")
     return any([row[1] == column_name for row in cursor.fetchall()])
 
 def add_tag_character_column(base_db_path: str, aliase_db_path: str,
@@ -102,7 +103,7 @@ def add_tag_character_column(base_db_path: str, aliase_db_path: str,
 
     # Check 'tag_character' already exists.
     # SQLite does not support using 'IF NOT EXISTS' in 'ALTER TABLE'
-    if not is_column_exists(base_conn, DEFAULT_META_TABLE_NAME, 'tag_string'):
+    if not is_column_exists(base_conn, DEFAULT_META_TABLE_NAME, 'tag_character'):
         # Add column to metadata database
         base_cursor.execute(f"""
         ALTER TABLE {metadata_table_name} 
@@ -132,13 +133,16 @@ def add_tag_character_column(base_db_path: str, aliase_db_path: str,
     # Packing to (record, aliases) for multiprocessing
     args_iterable = [(record, aliases) for record in records]
 
+    logger.info(f"Processing {len(records)} records parellel...")
+
     # Process records parallel. 
     with ProcessPoolExecutor() as executor:
-        to_update_records = executor.map(
+        to_update_records = list(tqdm(executor.map(
             wrapper_for_process_pool, 
             args_iterable,
             chunksize=50
-        )
+        ), total=len(args_iterable), desc="Processing all records", 
+        unit="record", leave=True))
 
     
     base_cursor.executemany(f"""
