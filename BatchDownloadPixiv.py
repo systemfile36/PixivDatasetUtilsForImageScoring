@@ -8,9 +8,11 @@ from datetime import datetime, timedelta
 
 COMMAND_FORMAT = 'gallery-dl -D "{path}" \
 --chunk-size "0.8m" --download-archive "{path}/.archive/archive.sqlite3" --range "{range}" \
---write-metadata "https://www.pixiv.net/tags/{tag}%20-%E6%BC%AB%E7%94%BB%20-%E8%AC%9B%E5%BA%A7%20-%E9%A2%A8%E6%99%AF/artworks?order={order}&scd={scd}&ecd={ecd}&s_mode=s_tag"'
+--write-metadata "https://www.pixiv.net/tags/{tag}%20-%E6%BC%AB%E7%94%BB%20-%E8%AC%9B%E5%BA%A7%20-%E9%A2%A8%E6%99%AF/artworks?order={order}&scd={scd}&ecd={ecd}&s_mode={s_mode}"'
 
 ORDER_BY = ("date", "date_d", "popular_d")
+
+S_MODE = ("s_tag", "s_tag_full", "s_tc")
 
 logger_handlers = [
     logger_factory.get_file_handler(log_prefix=os.path.basename(__file__)),
@@ -25,6 +27,7 @@ def batch_download_pixiv_by_tags(
         date_lower_bound: str='2020-04-04',
         date_upper_bound: str='2025-04-04',
         range_string: str='1-2000',
+        s_mode: str="s_tag",
         skip_rows: int=0):
     """
     batch download by tags list (json)
@@ -68,7 +71,7 @@ def batch_download_pixiv_by_tags(
 
             logger.info(f"download {tag_name}, scd: {scd.date()}, ecd: {ecd.date()}")
 
-            cmd = COMMAND_FORMAT.format(path=path, range=range_string, tag=urllib.parse.quote(tag_name), order=order, scd=scd.date(), ecd=ecd.date())
+            cmd = COMMAND_FORMAT.format(path=path, range=range_string, tag=urllib.parse.quote(tag_name), order=order, scd=scd.date(), ecd=ecd.date(), s_mode=s_mode)
 
             logger.debug(f"Execute {cmd}")
 
@@ -126,6 +129,12 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
+        "--s-mode",
+        type=str,
+        help="Pixiv search mode value. e.g.) 's_tag', 's_tag_full'. \nDefault is 's_tag' (partial match for tag)"
+    )
+
+    parser.add_argument(
         "--skip-rows",
         type=int,
         help="Number of rows to skip. Skip n rows from tag list specified by '--tag-list' option. Default is 0"
@@ -155,10 +164,13 @@ if __name__ == '__main__':
     if args.range is not None:
         kwargs['range_string'] = args.range
 
-    if args.order_by is not None:
+    if args.order_by is not None and args.order_by in ORDER_BY:
         kwargs['order'] = args.order_by
 
     if args.skip_rows is not None:
         kwargs['skip_rows'] = args.skip_rows
+
+    if args.s_mode is not None:
+        kwargs['s_mode'] = args.s_mode
 
     batch_download_pixiv_by_tags(args.path, **kwargs)
