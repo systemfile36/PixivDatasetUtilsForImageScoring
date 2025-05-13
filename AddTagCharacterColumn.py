@@ -119,10 +119,12 @@ def add_tag_character_column(base_db_path: str, aliase_db_path: str,
                         """)
 
     logger.info(f"Get {DEFAULT_META_PK_COLUMN} and {DEFAULT_META_TAGS_COLUMN} from {metadata_table_name} table")
-    # Get PK and tags string
+    
+    # Get PK and tags string only tag_character not applied
     base_cursor.execute(f"""
     SELECT {DEFAULT_META_PK_COLUMN}, {DEFAULT_META_TAGS_COLUMN}
     FROM {metadata_table_name}
+    WHERE tag_character = '{COLUMN_DEFAULT_VALUE}' OR tag_character = '';
     """)
 
     # Fetch all records immediately for multiprocessing
