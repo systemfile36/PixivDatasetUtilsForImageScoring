@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timedelta
 
 COMMAND_FORMAT = 'gallery-dl -D "{path}" \
---chunk-size "0.8m" --download-archive "{path}/.archive/archive.sqlite3" --range "{range}" \
+--chunk-size "0.8m" --download-archive "{path}/.archive/archive.sqlite3" --range "{range}" --exec "python DeleteIfExists.py \"{path}\" \"{{_filename}}\" \"{{_path}}\"" \
 --write-metadata "https://www.pixiv.net/tags/{tag}%20-%E6%BC%AB%E7%94%BB%20-%E8%AC%9B%E5%BA%A7%20-%E9%A2%A8%E6%99%AF/artworks?order={order}&scd={scd}&ecd={ecd}&s_mode={s_mode}"'
 
 ORDER_BY = ("date", "date_d", "popular_d")
