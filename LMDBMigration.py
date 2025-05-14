@@ -8,8 +8,14 @@ from pathlib import Path
 from PIL import Image
 from io import BytesIO
 
+from logger_factory import get_custom_handlers_logger, get_file_handler, get_default_stream_handler
+
 # Assume logger is defined elsewhere and injected into this script
-logger = None  # Placeholder for external logger injection
+logger_handlers = [
+    get_file_handler(log_prefix=os.path.basename(__file__)),
+    get_default_stream_handler()
+]
+logger = get_custom_handlers_logger(__file__, logger_handlers)
 
 def encode_image(file_path):
     """
@@ -37,8 +43,8 @@ def process_images_to_lmdb(dataset_root, lmdb_path, batch_size):
     - batch_size: Number of images to process per commit
     """
     try:
-        logger.info(f"Opening LMDB environment at {lmdb_path} with map size of 1TB")
-        env = lmdb.open(str(lmdb_path), map_size=1 << 40)
+        logger.info(f"Opening LMDB environment at {lmdb_path} with map size of 500GB")
+        env = lmdb.open(str(lmdb_path), map_size=1 << 39)
     except Exception as e:
         logger.error(f"Failed to open LMDB environment: {e}")
         return

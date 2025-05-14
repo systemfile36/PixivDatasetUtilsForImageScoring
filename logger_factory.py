@@ -2,11 +2,12 @@ import logging
 import sys
 import datetime
 from pathlib import Path
+from typing import List
 
 LOG_DIR_PATH = Path(__file__).resolve().parent / 'logs'
 LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
 
-def get_default_logger(name : str | None) -> logging.Logger:
+def get_default_logger(name : str) -> logging.Logger:
     """
     get logger with default setting
     """
@@ -21,7 +22,7 @@ def get_default_logger(name : str | None) -> logging.Logger:
     return logger
 
 def get_custom_handlers_logger(
-        name: str | None, handlers: list[logging.Handler]
+        name: str, handlers: List[logging.Handler]
         ) -> logging.Logger:
     """
     get logger with custom handler

@@ -11,6 +11,7 @@ from tqdm import tqdm
 from pathlib import Path
 from io import BytesIO
 from datetime import datetime
+from typing import List
 from logger_factory import get_file_handler, get_default_stream_handler, get_custom_handlers_logger
 
 # TensorFlow warning suppression
@@ -70,7 +71,7 @@ def init_db(path: str):
     conn.close()
 
 # Collect image files from directory
-def collect_image_files(root_dir: str) -> list[str]:
+def collect_image_files(root_dir: str) -> List[str]:
     """
     collect only image file
 
@@ -83,7 +84,7 @@ def collect_image_files(root_dir: str) -> list[str]:
                 files.append(os.path.join(root_dir, entry.name))
     return files
 
-def collect_all_image_files(root_path: str) -> list[str] | None:
+def collect_all_image_files(root_path: str) -> List[str]:
     """
     Collect all image files in `root_path`
 

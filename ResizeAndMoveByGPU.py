@@ -4,6 +4,7 @@ import shutil
 from PIL import Image
 import argparse
 from tqdm import tqdm
+from typing import List
 
 # Supress warning. 
 # Ignore all WARNING. only logging ERROR
@@ -26,7 +27,7 @@ logger_handlers = [
 ]
 logger = get_custom_handlers_logger(__file__, logger_handlers)
 
-def collect_image_files(root_dir: str) -> list[str]:
+def collect_image_files(root_dir: str) -> List[str]:
     """
     collect only image file
 
